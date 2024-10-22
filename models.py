@@ -9,7 +9,7 @@ class TodoModel(Base):
     Todonumber = Column(Integer, primary_key=True)
     title = Column(String)
     created_date = Column(DateTime, default=datetime.utcnow)
-    done_tasks = Column(Boolean=False)
+    done_tasks = Column(Boolean,default=False)
 
 # TagModelクラス (Tagテーブル用)
 class TagModel(Base):

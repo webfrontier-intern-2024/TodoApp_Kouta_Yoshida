@@ -6,8 +6,8 @@ import sys
 import os
 
 # .env.localファイルを読み込む
-load_dotenv('env.local')
-
+load_dotenv('.env.local')
+print (load_dotenv('.env.local'))
 # 環境変数を取得
 database_url = os.getenv('DATABASE_URL')
 #DBがなければエラーをはいて終了　if文
