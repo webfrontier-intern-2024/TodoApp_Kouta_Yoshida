@@ -1,0 +1,24 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from settings import Session 
+import uvicorn
+
+# データベースのベースモデル
+Base = declarative_base()
+
+# FastAPIアプリケーションの初期化
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

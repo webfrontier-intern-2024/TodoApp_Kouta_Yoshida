@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoアプリ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        form {
+            display: flex;
+            justify-content: space-between;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            width: 18%;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ToDoアプリ</h1>
+
+        <!-- タスクのリストを表示 -->
+        <ul>
+            {% for task in tasks %}
+                <li>{{ task }}</li>
+            {% else %}
+                <li>タスクはありません</li>
+            {% endfor %}
+        </ul>
+
+        <!-- 新しいタスクを追加するフォーム -->
+        <form action="/add" method="post">
+            <input type="text" name="task" placeholder="新しいタスクを入力">
+            <input type="submit" value="追加">
+        </form>
+    </div>
+</body>
+</html>

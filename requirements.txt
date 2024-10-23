@@ -1,0 +1,12 @@
+black
+flake8
+python-dotenv
+requests
+fastapi
+fastapi-route-logger-middleware
+sqlalchemy
+psycopg2
+uvicorn[standard]
+debugpy
+alembic
+sqlalchemy-seeder
