@@ -19,7 +19,7 @@ Base = declarative_base()
 
 # この時点ではまだSessionインスタンスは生成されていない
 # Session変数に格納されているのは実はsessionmakerインスタンス
-Session = sessionmaker(
+SessionLocal = sessionmaker(
     autocommit = False,
     autoflush = True,
     bind = engine

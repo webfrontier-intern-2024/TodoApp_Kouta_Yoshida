@@ -31,7 +31,8 @@
         }
         input[type="text"],
         input[type="date"],
-        textarea {
+        textarea,
+        select {
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
@@ -58,10 +59,23 @@
         <form action="/submit-task" method="post">
             <label for="task-name">タスク名</label>
             <input type="text" id="task-name" name="task_name" placeholder="タスク名を入力" required>
+            
             <label for="task-details">タスクの内容</label>
             <textarea id="task-details" name="task_details" placeholder="タスクの詳細を入力" required></textarea>
+            
             <label for="task-deadline">期限</label>
             <input type="date" id="task-deadline" name="task_deadline" required>
+            
+            <label for="task-tag">タグ</label>
+            <select id="task-tag" name="task_tag" required>
+                <option value="学校">学校</option>
+                <option value="職場">職場</option>
+                <option value="趣味">趣味</option>
+                <option value="遊び">遊び</option>
+                <option value="ひま">ひま</option>
+                <option value="その他">その他</option>
+            </select>
+            
             <input type="submit" value="追加">
         </form>
     </div>
