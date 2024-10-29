@@ -51,12 +51,20 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            color: green;
+        }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>タスクを追加</h1>
-        <form action="/submit-task" method="post">
+        <form id="task-form">
             <label for="task-name">タスク名</label>
             <input type="text" id="task-name" name="task_name" placeholder="タスク名を入力" required>
             
@@ -77,7 +85,50 @@
             </select>
             
             <input type="submit" value="追加">
+            <p class="feedback" id="feedback"></p>
         </form>
     </div>
+
+    <script>
+        document.getElementById('task-form').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent default form submission
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = '';  // Clear previous feedback
+
+            const taskData = {
+                title: document.getElementById('task-name').value,
+                details: document.getElementById('task-details').value,
+                deadline: document.getElementById('task-deadline').value,
+                tag: document.getElementById('task-tag').value
+            };
+
+            try {
+                const response = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    feedback.textContent = 'タスクが追加されました';
+                    feedback.classList.remove('error');
+                    feedback.classList.add('feedback');
+                    window.location.href = '/';
+
+                    // Reset the form
+                    document.getElementById('task-form').reset();
+                } else {
+                    feedback.textContent = 'タスクの追加に失敗しました';
+                    feedback.classList.add('error');
+                }
+            } catch (error) {
+                console.error('Error adding task:', error);
+                feedback.textContent = 'エラーが発生しました';
+                feedback.classList.add('error');
+            }
+        });
+    </script>
 </body>
 </html>

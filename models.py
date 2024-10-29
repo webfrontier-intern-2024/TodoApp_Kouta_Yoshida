@@ -11,7 +11,8 @@ class TodoModel(Base):
     title: Mapped[str] = mapped_column(String,nullable=False)
     created_date = Column(DateTime, default=datetime.utcnow)
     done_tasks: Mapped[bool] = mapped_column(Boolean,default=False)
-
+    details:  Mapped[str] = mapped_column(String,nullable=False)
+    deadline = Column(DateTime)
     # リレーションシップ（SettingsModelに対するリレーション）
     settings = relationship('SettingsModel', back_populates='todo')
 

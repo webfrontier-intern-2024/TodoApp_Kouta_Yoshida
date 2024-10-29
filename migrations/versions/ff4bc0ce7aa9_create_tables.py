@@ -40,9 +40,9 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['todo_id'], ['todo.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.drop_table('Settings')
     op.drop_table('Todo')
     op.drop_table('Tag')
-    op.drop_table('Settings')
     # ### end Alembic commands ###
 
 
