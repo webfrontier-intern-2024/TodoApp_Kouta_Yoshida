@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
@@ -23,11 +22,19 @@ class TodoCreate(BaseModel):
     title: str
     details: str
     deadline: str
-    # tag: str
 
 class TodoUpdate(BaseModel):
     title: str
     done_tasks: bool
+
+class TodoRead(BaseModel):
+    id:int
+    title: str
+    details: str
+    deadline: str
+
+    class Config:
+        orm_mode = True
 
 class TagCreate(BaseModel):
     outline: str
@@ -35,24 +42,45 @@ class TagCreate(BaseModel):
 class TagUpdate(BaseModel):
     outline: str
 
+class TagRead(BaseModel):
+    outline: str
+
+    class Config:
+        orm_mode = True
+
 # Initialize database tables
 create_tables()
 
 ### Todo Endpoints ###
 
-@router.get("/api/todos", response_model=List[TodoCreate])
+@router.get("/api/todos", response_model=List[TodoRead])
 def get_todos(db: Session = Depends(get_db)):
     todos = db.query(TodoModel).all()
-    return todos
+    # deadline を文字列に変換して返す
+    return [
+        {
+            "id": todo.id,
+            "title": todo.title,
+            "details": todo.details,
+            "deadline": todo.deadline.strftime("%Y-%m-%d")
+        }
+        for todo in todos
+    ]
 
-@router.get("/api/todos/{todo_id}", response_model=TodoCreate)
+@router.get("/api/todos/{todo_id}", response_model=TodoRead)
 def get_todo(todo_id: int, db: Session = Depends(get_db)):
     todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
     if not todo:
         raise HTTPException(status_code=404, detail="Todo not found")
-    return todo
+    # deadline を文字列に変換して返す
+    return {
+        "id": todo.id,
+        "title": todo.title,
+        "details": todo.details,
+        "deadline": todo.deadline.strftime("%Y-%m-%d")
+    }
 
-@router.post("/api/todos", response_model=TodoCreate)
+@router.post("/api/todos", response_model=TodoRead)
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     db_todo = TodoModel(
         title=todo.title,
@@ -62,14 +90,14 @@ def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     db.add(db_todo)
     db.commit()
     db.refresh(db_todo)
-    change_string = TodoCreate(
-        title=todo.title,
-        details=todo.details,
-        deadline=todo.deadline,
-    )
-    return change_string
+    # deadline を文字列に変換して返す
+    return {
+        "title": db_todo.title,
+        "details": db_todo.details,
+        "deadline": db_todo.deadline.strftime("%Y-%m-%d")
+    }
 
-@router.put("/todos/{todo_id}", response_model=TodoCreate)
+@router.put("/api/todos/{todo_id}", response_model=TodoRead)
 def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)):
     db_todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
     if not db_todo:
@@ -78,9 +106,14 @@ def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)):
     db_todo.done_tasks = todo.done_tasks
     db.commit()
     db.refresh(db_todo)
-    return db_todo
+    # deadline を文字列に変換して返す
+    return {
+        "title": db_todo.title,
+        "details": db_todo.details,
+        "deadline": db_todo.deadline.strftime("%Y-%m-%d")
+    }
 
-@router.delete("/todos/{todo_id}", response_model=dict)
+@router.delete("/api/todos/{todo_id}", response_model=dict)
 def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     db_todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
     if not db_todo:
@@ -91,19 +124,19 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
 
 ### Tag Endpoints ###
 
-@router.get("/tags", response_model=List[TagCreate])
+@router.get("/api/tags", response_model=List[TagRead])
 def get_tags(db: Session = Depends(get_db)):
     tags = db.query(TagModel).all()
     return tags
 
-@router.get("/tags/{tag_id}", response_model=TagCreate)
+@router.get("/api/tags/{tag_id}", response_model=TagRead)
 def get_tag(tag_id: int, db: Session = Depends(get_db)):
     tag = db.query(TagModel).filter(TagModel.id == tag_id).first()
     if not tag:
         raise HTTPException(status_code=404, detail="Tag not found")
     return tag
 
-@router.post("/tags", response_model=TagCreate)
+@router.post("/api/tags", response_model=TagRead)
 def create_tag(tag: TagCreate, db: Session = Depends(get_db)):
     db_tag = TagModel(outline=tag.outline)
     db.add(db_tag)
@@ -111,7 +144,7 @@ def create_tag(tag: TagCreate, db: Session = Depends(get_db)):
     db.refresh(db_tag)
     return db_tag
 
-@router.put("/tags/{tag_id}", response_model=TagCreate)
+@router.put("/api/tags/{tag_id}", response_model=TagRead)
 def update_tag(tag_id: int, tag: TagUpdate, db: Session = Depends(get_db)):
     db_tag = db.query(TagModel).filter(TagModel.id == tag_id).first()
     if not db_tag:
@@ -121,7 +154,7 @@ def update_tag(tag_id: int, tag: TagUpdate, db: Session = Depends(get_db)):
     db.refresh(db_tag)
     return db_tag
 
-@router.delete("/tags/{tag_id}", response_model=dict)
+@router.delete("/api/tags/{tag_id}", response_model=dict)
 def delete_tag(tag_id: int, db: Session = Depends(get_db)):
     db_tag = db.query(TagModel).filter(TagModel.id == tag_id).first()
     if not db_tag:

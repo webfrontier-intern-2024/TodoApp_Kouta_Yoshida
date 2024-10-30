@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todoアプリ</title>
     <style>
+        /* CSS はそのまま */
         body {
             font-family: "Yu Gothic", "游ゴシック", YuGothic, "游ゴシック体";
             background-color: #f4f4f4;
@@ -35,6 +36,7 @@
             padding: 15px;
             margin-bottom: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
         .task-card h2 {
             margin: 0 0 10px 0;
@@ -48,6 +50,20 @@
         .task-card .deadline {
             font-weight: bold;
             color: #ff6347;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #cc5040;
         }
         .add-task-btn {
             display: block;
@@ -76,11 +92,32 @@
     </div>
 
     <script>
+        // タスクを削除する関数
+        async function deleteTask(id) {
+            console.log("aiigkfir",id);  
+            if (confirm("本当に削除しますか？")) {
+                try {
+                    const response = await fetch(`/api/todos/${id}`, {
+                        method: 'DELETE',
+                    });
+                    if (response.ok) {
+                        console.log("Task deleted successfully");
+                        fetchTasks();
+                    } else {
+                        const errorData = await response.json();
+                        console.error("Failed to delete task:", errorData);
+                    }
+                } catch (error) {
+                    console.error("Error deleting task:", error);
+                }
+            }
+        }
         // タスクのデータを取得して表示する関数
         async function fetchTasks() {
             try {
                 const response = await fetch('/api/todos');  // APIエンドポイントからデータを取得
                 const tasks = await response.json();
+                console.log("Retrieved tasks:", tasks);
                 const taskList = document.getElementById('task-list');
                 taskList.innerHTML = '';  // 現在のタスクをクリア
 
@@ -93,6 +130,16 @@
                             <p><strong>詳細:</strong> ${task.details}</p>
                             <p class="deadline"><strong>期限:</strong> ${task.deadline}</p>
                         `;
+                        
+                        // 削除ボタンの作成
+                        const deleteButton = document.createElement('button');
+                        deleteButton.classList.add('delete-btn');
+                        deleteButton.textContent = '削除';
+                        deleteButton.onclick = () => deleteTask(task.id); 
+                        console.log("aaaaa",task.id); // task.id を使って削除
+
+                        // タスクカードに削除ボタンを追加
+                        taskCard.appendChild(deleteButton);
                         taskList.appendChild(taskCard);
                     });
                 } else {
