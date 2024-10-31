@@ -92,6 +92,7 @@ def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     db.refresh(db_todo)
     # deadline を文字列に変換して返す
     return {
+        "id": db_todo.id,
         "title": db_todo.title,
         "details": db_todo.details,
         "deadline": db_todo.deadline.strftime("%Y-%m-%d")
@@ -108,6 +109,7 @@ def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends(get_db)):
     db.refresh(db_todo)
     # deadline を文字列に変換して返す
     return {
+        "id": db_todo.id,
         "title": db_todo.title,
         "details": db_todo.details,
         "deadline": db_todo.deadline.strftime("%Y-%m-%d")
